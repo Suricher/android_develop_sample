@@ -8,7 +8,7 @@
     android:background="@color/colorPrimary"
     tools:context="com.pinger.test.MainActivity">
 
-    <com.pinger.widget.banner.BannerView
+    <com.pinger.widget.view.banner.BannerView
         android:id="@+id/bannerView"
         android:layout_width="match_parent"
         android:layout_height="200dp"

@@ -5,8 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.pinger.test.ui.adapter.BannerAdapter;
-import com.pinger.widget.banner.BannerBaseAdapter;
-import com.pinger.widget.banner.BannerView;
+import com.pinger.widget.view.banner.BannerBaseAdapter;
+import com.pinger.widget.view.banner.BannerView;
 
 import java.util.ArrayList;
 import java.util.List;

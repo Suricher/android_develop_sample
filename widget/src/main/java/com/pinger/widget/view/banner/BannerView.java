@@ -1,4 +1,4 @@
-package com.pinger.widget.banner;
+package com.pinger.widget.view.banner;
 
 import android.content.Context;
 import android.os.Handler;

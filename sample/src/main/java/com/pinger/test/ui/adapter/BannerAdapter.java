@@ -6,7 +6,7 @@ import android.widget.ImageView;
 
 import com.pinger.library.ImageGo;
 import com.pinger.test.R;
-import com.pinger.widget.banner.BannerBaseAdapter;
+import com.pinger.widget.view.banner.BannerBaseAdapter;
 
 import java.util.List;
 
