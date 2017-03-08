@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -29,6 +30,8 @@ import java.util.List;
  * 自定义无限轮转的海报控件
  */
 public class BannerView extends FrameLayout {
+
+    private static final String TAG = BannerView.class.getSimpleName();
 
     private ViewPager mViewPager;
 
@@ -103,7 +106,7 @@ public class BannerView extends FrameLayout {
         mRootView.findViewById(R.id.viewPager_container).setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                return mViewPager.onInterceptTouchEvent(motionEvent);
+                return mViewPager.dispatchTouchEvent(motionEvent);
             }
         });
     }
@@ -134,19 +137,22 @@ public class BannerView extends FrameLayout {
             // 记录当前的页面位置
             mCurrentPosition = currentPosition;
 
-
-            System.out.println("=======================当前第" + mCurrentPosition + "页=====================");
+            Log.d(TAG, "=======================当前第" + mCurrentPosition + "页=====================");
 
             // 一直给自己发消息
             mHandler.postDelayed(this, mDuration);
         }
 
         void start() {
+
+            Log.d(TAG, "=======================开始轮播====================");
+
             mHandler.removeCallbacksAndMessages(null);
             mHandler.postDelayed(this, mDuration);
         }
 
         void stop() {
+            Log.d(TAG, "=======================停止轮播====================");
             mHandler.removeCallbacksAndMessages(null);
         }
     }
@@ -216,13 +222,13 @@ public class BannerView extends FrameLayout {
     }
 
     public void startAutoScroll() {
-        if (mScrollTask == null) return;
+        if (mScrollTask == null || isAutoScrolling) return;
         isAutoScrolling = true;
         mScrollTask.start();
     }
 
     public void stopAutoScroll() {
-        if (mScrollTask == null) return;
+        if (mScrollTask == null || !isAutoScrolling) return;
         isAutoScrolling = false;
         mScrollTask.stop();
     }

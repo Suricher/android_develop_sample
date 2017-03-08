@@ -3,6 +3,7 @@ package com.pinger.widget.view.banner;
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -17,7 +18,8 @@ public abstract class BannerBaseAdapter extends PagerAdapter {
 
     private Context mContext;
     private List<Object> mDatas;
-    private OnPageClickListener mListener;
+    private OnPageTouchListener mListener;
+    private long mDownTime;
 
 
     public BannerBaseAdapter(Context context, List<Object> datas) {
@@ -58,14 +60,38 @@ public abstract class BannerBaseAdapter extends PagerAdapter {
 
         final Object finalObject = object;
         final int finalPosition = position;
-        convertView.setOnClickListener(new View.OnClickListener() {
+
+
+        // 处理条目的触摸事件
+        convertView.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                if (mListener != null && finalObject != null) {
-                    mListener.onPageClick(finalPosition,finalObject);
+            public boolean onTouch(View v, MotionEvent event) {
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                    case MotionEvent.ACTION_MOVE:
+                        mDownTime = System.currentTimeMillis();
+                        if (mListener != null) {
+                            mListener.onPageDown();
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        long upTime = System.currentTimeMillis();
+                        if (mListener != null) {
+                            mListener.onPageUp();
+                        }
+                        if (upTime - mDownTime < 500) {
+                            // 500毫秒以内就算单击
+                            if (mListener != null && finalObject != null) {
+                                mListener.onPageClick(finalPosition, finalObject);
+                            }
+                        }
+                        break;
                 }
+                return false;
             }
         });
+
 
         container.addView(convertView);
         return convertView;
@@ -77,12 +103,19 @@ public abstract class BannerBaseAdapter extends PagerAdapter {
         notifyDataSetChanged();
     }
 
-    public void setOnPageClickListener(OnPageClickListener listener) {
+    public void setOnPageTouchListener(OnPageTouchListener listener) {
         this.mListener = listener;
     }
 
-    public interface OnPageClickListener {
-        void onPageClick(int position,Object obj);
+    /**
+     * 条目页面的触摸事件
+     */
+    public interface OnPageTouchListener {
+        void onPageClick(int position, Object obj);
+
+        void onPageDown();
+
+        void onPageUp();
     }
 
     // 绑定视图和数据

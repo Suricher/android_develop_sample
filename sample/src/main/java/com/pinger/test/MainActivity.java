@@ -15,16 +15,17 @@ public class MainActivity extends AppCompatActivity {
 
     private List<Object> mDatas = new ArrayList<>();
     private BannerBaseAdapter mAdapter;
+    private BannerView mBannerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BannerView bannerView = (BannerView) findViewById(R.id.bannerView);
-        bannerView.setAdapter(mAdapter = new BannerAdapter(this, mDatas));
-        bannerView.startAutoScroll();
-        bannerView.setAnimationDuration(1000);
+        mBannerView = (BannerView) findViewById(R.id.bannerView);
+        mBannerView.setAdapter(mAdapter = new BannerAdapter(this, mDatas));
+        mBannerView.startAutoScroll();
+        mBannerView.setAnimationDuration(1000);
 
         // 加载数据
         initData();
@@ -32,15 +33,25 @@ public class MainActivity extends AppCompatActivity {
 
         // 更新数据，重新设置当前的位置
         mAdapter.setNewData(mDatas);
-        bannerView.setCurrentPosition(mDatas);
+        mBannerView.setCurrentPosition(mDatas);
 
     }
 
     private void initEvent() {
-        mAdapter.setOnPageClickListener(new BannerBaseAdapter.OnPageClickListener() {
+        mAdapter.setOnPageTouchListener(new BannerBaseAdapter.OnPageTouchListener() {
             @Override
             public void onPageClick(int position, Object obj) {
                 Toast.makeText(MainActivity.this, "点击了条目" + position, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onPageDown() {
+                mBannerView.stopAutoScroll();
+            }
+
+            @Override
+            public void onPageUp() {
+                mBannerView.startAutoScroll();
             }
         });
     }
