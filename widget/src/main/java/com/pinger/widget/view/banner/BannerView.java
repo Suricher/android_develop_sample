@@ -237,11 +237,11 @@ public class BannerView extends FrameLayout {
         return isAutoScrolling;
     }
 
-    public void setCurrentPosition(List<Object> datas) {
+    public void setCurrentPosition(List<String> datas) {
         setCurrentPosition(datas, 0);
     }
 
-    public void setCurrentPosition(List<Object> datas, int position) {
+    public void setCurrentPosition(List<String> datas, int position) {
         if (datas == null) return;
         // 获取居中的位置
         int midPosition;
@@ -260,8 +260,5 @@ public class BannerView extends FrameLayout {
         }
 
         mViewPager.setOffscreenPageLimit(datas.size());
-
     }
-
-
 }

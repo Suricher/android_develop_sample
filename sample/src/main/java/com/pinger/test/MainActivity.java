@@ -13,8 +13,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private List<Object> mDatas = new ArrayList<>();
-    private BannerBaseAdapter mAdapter;
+    private List<String> mDatas = new ArrayList<>();
+    private BannerAdapter mAdapter;
     private BannerView mBannerView;
 
     @Override
@@ -23,18 +23,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mBannerView = (BannerView) findViewById(R.id.bannerView);
-        mBannerView.setAdapter(mAdapter = new BannerAdapter(this, mDatas));
+        mBannerView.setAdapter(mAdapter = new BannerAdapter(this));
         mBannerView.startAutoScroll();
         mBannerView.setAnimationDuration(1000);
 
         // 加载数据
-        initData();
         initEvent();
+        initData();
 
-        // 更新数据，重新设置当前的位置
-        mAdapter.setNewData(mDatas);
+        // 重新设置当前的位置
+        mAdapter.setData(mDatas);
         mBannerView.setCurrentPosition(mDatas);
-
     }
 
     private void initEvent() {
