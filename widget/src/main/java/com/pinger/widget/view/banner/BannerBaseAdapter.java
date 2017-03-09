@@ -1,11 +1,14 @@
 package com.pinger.widget.view.banner;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -122,6 +125,24 @@ public abstract class BannerBaseAdapter<T> extends PagerAdapter {
     public <K extends View> K getView(int viewId) {
         View view = mConvertView.findViewById(viewId);
         return (K) view;
+    }
+
+    public BannerBaseAdapter setText(int viewId, String text) {
+        TextView tv = getView(viewId);
+        tv.setText(text);
+        return this;
+    }
+
+    public BannerBaseAdapter setImage(int viewId, int drawableId) {
+        ImageView iv = getView(viewId);
+        iv.setImageResource(drawableId);
+        return this;
+    }
+
+    public BannerBaseAdapter setImage(int viewId, Bitmap bitmap) {
+        ImageView iv = getView(viewId);
+        iv.setImageBitmap(bitmap);
+        return this;
     }
 
     /**
