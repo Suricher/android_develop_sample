@@ -22,12 +22,11 @@ import android.widget.Scroller;
 import com.pinger.widget.R;
 
 import java.lang.reflect.Field;
-import java.util.List;
 
 /**
  * @author Pinger
  * @since 2017/3/8 0008 下午 3:26
- * 自定义无限轮转的海报控件
+ * 自定义无限轮转的海报控件，抽离了适配器和滑动事件，更加轻便
  */
 public class BannerView extends FrameLayout {
 
@@ -80,6 +79,7 @@ public class BannerView extends FrameLayout {
         mViewPager.setLayoutParams(params);
         mViewPager.setPageMargin(pageMargin);
         mViewPager.setPageTransformer(false, new BannerPageTransformer());
+        mViewPager.setOffscreenPageLimit(20);
 
         // 自动轮播任务
         mScrollTask = new AutoScrollTask();
@@ -237,18 +237,17 @@ public class BannerView extends FrameLayout {
         return isAutoScrolling;
     }
 
-    public void setCurrentPosition(List<Object> datas) {
-        setCurrentPosition(datas, 0);
+    public void setCurrentPosition(int count) {
+        setCurrentPosition(count, 0);
     }
 
-    public void setCurrentPosition(List<Object> datas, int position) {
-        if (datas == null) return;
+    public void setCurrentPosition(int count, int position) {
         // 获取居中的位置
         int midPosition;
-        if (datas.size() == 0) {
+        if (count == 0) {
             midPosition = Integer.MAX_VALUE / 2;
         } else {
-            midPosition = Integer.MAX_VALUE / 2 - Integer.MAX_VALUE / 2 % datas.size();
+            midPosition = Integer.MAX_VALUE / 2 - Integer.MAX_VALUE / 2 % count;
         }
 
         if (mCurrentPosition != 0) {
@@ -259,9 +258,6 @@ public class BannerView extends FrameLayout {
             mViewPager.setCurrentItem(midPosition + position);
         }
 
-        mViewPager.setOffscreenPageLimit(datas.size());
-
+        mViewPager.setOffscreenPageLimit(count);
     }
-
-
 }

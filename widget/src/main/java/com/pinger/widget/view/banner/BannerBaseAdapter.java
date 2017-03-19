@@ -1,12 +1,17 @@
 package com.pinger.widget.view.banner;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -14,17 +19,32 @@ import java.util.List;
  * @since 2017/3/8 0008 下午 6:29
  * ViewPager基类适配器，需要传入Item视图和数据
  */
-public abstract class BannerBaseAdapter extends PagerAdapter {
+public abstract class BannerBaseAdapter<T> extends PagerAdapter {
 
     private Context mContext;
-    private List<Object> mDatas;
+    private List<T> mDatas;
     private OnPageTouchListener mListener;
     private long mDownTime;
+    private int mLayoutResID;
+    private View mConvertView;
+
+    public BannerBaseAdapter(Context context, int layoutResID) {
+        init(context, new ArrayList<T>(), layoutResID);
+    }
+
+    public BannerBaseAdapter(Context context, T[] objects, int layoutResID) {
+        init(context, Arrays.asList(objects), layoutResID);
+    }
+
+    public BannerBaseAdapter(Context context, List<T> datas, int layoutResID) {
+        init(context, datas, layoutResID);
+    }
 
 
-    public BannerBaseAdapter(Context context, List<Object> datas) {
-        this.mContext = context;
-        this.mDatas = datas;
+    private void init(Context context, List<T> datas, int layoutResID) {
+        mContext = context;
+        mDatas = new ArrayList<>(datas);
+        mLayoutResID = layoutResID;
     }
 
     @Override
@@ -42,28 +62,27 @@ public abstract class BannerBaseAdapter extends PagerAdapter {
         container.removeView((View) object);
     }
 
+
+    public T getItem(int position) {
+        return mDatas.get(position);
+    }
+
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        View convertView = LayoutInflater.from(mContext).inflate(getItemLayoutRes(), null);
+        mConvertView = LayoutInflater.from(mContext).inflate(mLayoutResID, null);
+
         if (mDatas != null && mDatas.size() != 0) {
             position = position % mDatas.size();
         }
 
-        Object object = null;
         if (mDatas != null) {
-            object = mDatas.get(position);
-            if (object != null) {
-                // 处理视图和数据
-                performHolder(convertView, object, position);
-            }
+            // 处理视图和数据
+            convert(mConvertView, getItem(position));
         }
 
-        final Object finalObject = object;
         final int finalPosition = position;
-
-
         // 处理条目的触摸事件
-        convertView.setOnTouchListener(new View.OnTouchListener() {
+        mConvertView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
@@ -82,8 +101,8 @@ public abstract class BannerBaseAdapter extends PagerAdapter {
                         }
                         if (upTime - mDownTime < 500) {
                             // 500毫秒以内就算单击
-                            if (mListener != null && finalObject != null) {
-                                mListener.onPageClick(finalPosition, finalObject);
+                            if (mListener != null && getItem(finalPosition) != null) {
+                                mListener.onPageClick(finalPosition, getItem(finalPosition));
                             }
                         }
                         break;
@@ -92,16 +111,51 @@ public abstract class BannerBaseAdapter extends PagerAdapter {
             }
         });
 
-
-        container.addView(convertView);
-        return convertView;
+        container.addView(mConvertView);
+        return mConvertView;
     }
 
-    public void setNewData(List<Object> datas) {
+    public void setData(List<T> datas) {
         if (datas == null) return;
-        mDatas = datas;
+        this.mDatas = new ArrayList<>(datas);
         notifyDataSetChanged();
     }
+
+
+    public <K extends View> K getView(int viewId) {
+        View view = mConvertView.findViewById(viewId);
+        return (K) view;
+    }
+
+    public BannerBaseAdapter setText(int viewId, String text) {
+        TextView tv = getView(viewId);
+        tv.setText(text);
+        return this;
+    }
+
+    public BannerBaseAdapter setImage(int viewId, int drawableId) {
+        ImageView iv = getView(viewId);
+        iv.setImageResource(drawableId);
+        return this;
+    }
+
+    public BannerBaseAdapter setImage(int viewId, Bitmap bitmap) {
+        ImageView iv = getView(viewId);
+        iv.setImageBitmap(bitmap);
+        return this;
+    }
+
+    /**
+     * 获取Item对象
+     *
+     * @return
+     */
+    public View getItemView() {
+        return mConvertView;
+    }
+
+    // 绑定视图和数据
+    protected abstract void convert(View convertView, T data);
 
     public void setOnPageTouchListener(OnPageTouchListener listener) {
         this.mListener = listener;
@@ -118,9 +172,5 @@ public abstract class BannerBaseAdapter extends PagerAdapter {
         void onPageUp();
     }
 
-    // 绑定视图和数据
-    protected abstract void performHolder(View convertView, Object object, int position);
 
-    // 获取条目视图id
-    protected abstract int getItemLayoutRes();
 }
