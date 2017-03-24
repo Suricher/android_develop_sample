@@ -93,6 +93,7 @@ public abstract class BannerBaseAdapter<T> extends PagerAdapter {
                         if (mListener != null) {
                             mListener.onPageDown();
                         }
+
                         break;
                     case MotionEvent.ACTION_UP:
                         long upTime = System.currentTimeMillis();

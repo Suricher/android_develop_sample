@@ -42,8 +42,6 @@ public class BannerView extends FrameLayout {
     private long mDuration = 4000;
     // 当前滑动的状态
     private boolean isAutoScrolling;
-    // 当前的条目位置
-    private int mCurrentPosition;
 
 
     private View mRootView;
@@ -134,10 +132,7 @@ public class BannerView extends FrameLayout {
                 }
             }
 
-            // 记录当前的页面位置
-            mCurrentPosition = currentPosition;
-
-            Log.d(TAG, "=======================当前第" + mCurrentPosition + "页=====================");
+            Log.d(TAG, "=======================当前第" + currentPosition + "页=====================");
 
             // 一直给自己发消息
             mHandler.postDelayed(this, mDuration);
@@ -238,26 +233,12 @@ public class BannerView extends FrameLayout {
     }
 
     public void setCurrentPosition(int count) {
-        setCurrentPosition(count, 0);
-    }
-
-    public void setCurrentPosition(int count, int position) {
         // 获取居中的位置
-        int midPosition;
-        if (count == 0) {
-            midPosition = Integer.MAX_VALUE / 2;
-        } else {
-            midPosition = Integer.MAX_VALUE / 2 - Integer.MAX_VALUE / 2 % count;
+        int midPosition = 0;
+        if (count != 0) {
+            midPosition = Integer.MAX_VALUE / 2 - Integer.MAX_VALUE % count;
         }
 
-        if (mCurrentPosition != 0) {
-            // 回到之前停留的页面
-            mViewPager.setCurrentItem(mCurrentPosition + 1);
-        } else {
-            // 设置回第0页
-            mViewPager.setCurrentItem(midPosition + position);
-        }
-
-        mViewPager.setOffscreenPageLimit(count);
+        mViewPager.setCurrentItem(midPosition);
     }
 }

@@ -22,6 +22,7 @@ public class BannerHeadView implements BaseRecyclerAdapter.ItemView {
     private List<String> mDatas;
     private BannerView mBannerView;
     private BannerAdapter mAdapter;
+    boolean isFromRefresh;
 
     @Override
     public View onCreateView(final ViewGroup parent) {
@@ -57,10 +58,14 @@ public class BannerHeadView implements BaseRecyclerAdapter.ItemView {
     @Override
     public void onBindView(View view) {
         mAdapter.setData(mDatas);
-        mBannerView.setCurrentPosition(mDatas.size());
+        if (isFromRefresh) {
+            mBannerView.setCurrentPosition(mDatas.size());
+            isFromRefresh = false;
+        }
     }
 
-    public void setData(List<BannerBean> datas) {
-        mDatas = datas.get(0).data;
+    public void setData(BannerBean data, boolean isFromRefresh) {
+        mDatas = data.data;
+        this.isFromRefresh = isFromRefresh;
     }
 }

@@ -9,6 +9,7 @@ import com.pinger.swipeview.swipe.OnRefreshListener;
 import com.pinger.swipeview.swipe.SwipeRefreshLayout;
 import com.pinger.test.R;
 import com.pinger.test.dao.BannerBean;
+import com.pinger.test.dao.BannerTextBean;
 import com.pinger.test.ui.adapter.MainAdapter;
 import com.pinger.test.ui.holder.BannerHeadView;
 
@@ -17,7 +18,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private List<BannerBean> mDatas = new ArrayList<>();
     private MainAdapter mAdapter;
     private SwipeRecyclerView mSwipeRecyclerView;
     private BannerHeadView mHeadView;
@@ -61,12 +61,18 @@ public class MainActivity extends AppCompatActivity {
         datas.add("http://bpic.588ku.com/back_pic/00/02/87/48561ba9a32f297.jpg");
         datas.add("http://bpic.588ku.com/back_pic/02/64/88/4957863e5539451.jpg");
         datas.add("http://bpic.588ku.com/back_pic/03/62/43/7257aacb5e8d877.jpg");
-        mDatas.add(new BannerBean(datas));
 
+        mHeadView.setData(new BannerBean(datas), true);
+
+        List<String> datas2 = new ArrayList<>();
+
+        for (int i = 0; i < 50; i++) {
+            datas2.add("我是最帅的" + i);
+        }
+
+        BannerTextBean textBean = new BannerTextBean(datas2);
         // 更新数据
         mAdapter.clear();
-        mAdapter.addAll(mDatas);
-        mHeadView.setData(mDatas);
-
+        mAdapter.addAll(textBean.data);
     }
 }
