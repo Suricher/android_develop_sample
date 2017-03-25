@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
-        applicationId "com.pinger.android_transition"
+        applicationId "com.pinger.transition"
         minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
