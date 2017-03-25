@@ -1,1 +1,1 @@
-include ':app', ':sample', ':widget', ':android_framework', ':mvp'
+include ':android_framework', ':android_transition'
