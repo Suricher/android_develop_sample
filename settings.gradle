@@ -1,1 +1,1 @@
-include ':android_framework', ':android_transition', ':android_widght', ':android_develop'
+include ':android_framework', ':android_transition', ':android_widget', ':android_develop', ':android_component'
