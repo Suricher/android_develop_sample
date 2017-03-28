@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="statusBarSize">25dp</dimen>
+    <dimen name="actionBarSize">81dp</dimen>
+
+</resources>

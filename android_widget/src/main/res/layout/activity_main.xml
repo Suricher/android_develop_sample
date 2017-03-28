@@ -1,14 +1,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <TextView
-        android:background="#A8A8A8"
-        android:onClick="startPhoto"
+    <com.pinger.widget.ninegridview.NineGridView
+        android:id="@+id/nineGrid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="15dp"
-        android:text="图片浏览器"/>
+        android:layout_marginBottom="8dp"
+        app:ngv_gridSpacing="3dp"
+        app:ngv_maxSize="9"
+        app:ngv_mode="grid"
+        app:ngv_singleImageRatio="1"
+        app:ngv_singleImageSize="250dp"/>
 
 
 </LinearLayout>

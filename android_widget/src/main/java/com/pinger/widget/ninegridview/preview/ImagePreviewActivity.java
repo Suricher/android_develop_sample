@@ -1,9 +1,13 @@
 package com.pinger.widget.ninegridview.preview;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -11,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -28,6 +33,8 @@ public class ImagePreviewActivity extends AppCompatActivity implements ViewTreeO
     public static final int ANIMATE_DURATION = 200;
 
     private RelativeLayout rootView;
+
+    private Animator mCurrentAnimator;
 
     private ImagePreviewAdapter imagePreviewAdapter;
     private List<ImageEntity> mImageEntities;
@@ -113,32 +120,39 @@ public class ImagePreviewActivity extends AppCompatActivity implements ViewTreeO
      * activity的退场动画
      */
     public void finishActivityAnim() {
-        final View view = imagePreviewAdapter.getPrimaryItem();
-        final ImageView imageView = imagePreviewAdapter.getPrimaryImageView();
-        computeImageWidthAndHeight(imageView);
 
-        final ImageEntity imageData = mImageEntities.get(currentItem);
-        final float vx = imageData.imageViewWidth * 1.0f / imageWidth;
-        final float vy = imageData.imageViewHeight * 1.0f / imageHeight;
-        final ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1.0f);
-        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                long duration = animation.getDuration();
-                long playTime = animation.getCurrentPlayTime();
-                float fraction = duration > 0 ? (float) playTime / duration : 1f;
-                if (fraction > 1) fraction = 1;
-                view.setTranslationX(evaluateInt(fraction, 0, imageData.imageViewX + imageData.imageViewWidth / 2 - imageView.getWidth() / 2));
-                view.setTranslationY(evaluateInt(fraction, 0, imageData.imageViewY + imageData.imageViewHeight / 2 - imageView.getHeight() / 2));
-                view.setScaleX(evaluateFloat(fraction, 1, vx));
-                view.setScaleY(evaluateFloat(fraction, 1, vy));
-                view.setAlpha(1 - fraction);
-                rootView.setBackgroundColor(evaluateArgb(fraction, Color.BLACK, Color.TRANSPARENT));
-            }
-        });
-        addOutListener(valueAnimator);
-        valueAnimator.setDuration(ANIMATE_DURATION);
-        valueAnimator.start();
+
+
+
+
+//
+//
+//        final View view = imagePreviewAdapter.getPrimaryItem();
+//        final ImageView imageView = imagePreviewAdapter.getPrimaryImageView();
+//        computeImageWidthAndHeight(imageView);
+//
+//        final ImageEntity imageData = mImageEntities.get(currentItem);
+//        final float vx = imageData.imageViewWidth * 1.0f / imageWidth;
+//        final float vy = imageData.imageViewHeight * 1.0f / imageHeight;
+//        final ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1.0f);
+//        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//            @Override
+//            public void onAnimationUpdate(ValueAnimator animation) {
+//                long duration = animation.getDuration();
+//                long playTime = animation.getCurrentPlayTime();
+//                float fraction = duration > 0 ? (float) playTime / duration : 1f;
+//                if (fraction > 1) fraction = 1;
+//                view.setTranslationX(evaluateInt(fraction, 0, imageData.imageViewX + imageData.imageViewWidth / 2 - imageView.getWidth() / 2));
+//                view.setTranslationY(evaluateInt(fraction, 0, imageData.imageViewY + imageData.imageViewHeight / 2 - imageView.getHeight() / 2));
+//                view.setScaleX(evaluateFloat(fraction, 1, vx));
+//                view.setScaleY(evaluateFloat(fraction, 1, vy));
+//                view.setAlpha(1 - fraction);
+//                rootView.setBackgroundColor(evaluateArgb(fraction, Color.BLACK, Color.TRANSPARENT));
+//            }
+//        });
+//        addOutListener(valueAnimator);
+//        valueAnimator.setDuration(ANIMATE_DURATION);
+//        valueAnimator.start();
     }
 
     /**
@@ -245,5 +259,26 @@ public class ImagePreviewActivity extends AppCompatActivity implements ViewTreeO
                 | (startR + (int) (fraction * (endR - startR))) << 16//
                 | (startG + (int) (fraction * (endG - startG))) << 8//
                 | (startB + (int) (fraction * (endB - startB)));
+    }
+
+    private float calculateRatio(Rect startBounds, Rect finalBounds) {
+        float ratio;
+        if ((float) finalBounds.width() / finalBounds.height() > (float) startBounds.width() / startBounds.height()) {
+            // Extend start bounds horizontally
+            ratio = (float) startBounds.height() / finalBounds.height();
+            float startWidth = ratio * finalBounds.width();
+            float deltaWidth = (startWidth - startBounds.width()) / 2;
+            startBounds.left -= deltaWidth;
+            startBounds.right += deltaWidth;
+        }
+        else {
+            // Extend start bounds vertically
+            ratio = (float) startBounds.width() / finalBounds.width();
+            float startHeight = ratio * finalBounds.height();
+            float deltaHeight = (startHeight - startBounds.height()) / 2;
+            startBounds.top -= deltaHeight;
+            startBounds.bottom += deltaHeight;
+        }
+        return ratio;
     }
 }

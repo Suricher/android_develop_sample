@@ -122,6 +122,7 @@ public class PhotoActivity extends AppCompatActivity {
 
         // Upon clicking the zoomed-in image, it should zoom back down to the original bounds
         // and show the thumbnail instead of the expanded image.
+        // 结束动画
         final float startScaleFinal = startScale;
         expandedImageView.setOnClickListener(new View.OnClickListener() {
             @Override
