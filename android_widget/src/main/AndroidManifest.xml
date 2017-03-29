@@ -20,8 +20,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".photoview.PhotoActivity"/>
-        <activity android:name=".ninegridview.preview.ImagePreviewActivity"/>
-        <activity android:name=".ninegridview.preview.ImagePreviewActivity2"/>
+        <activity android:name=".ninegridview.preview.ImagePreviewActivity"
+            android:theme="@style/ImageViewerTheme"/>
     </application>
 
 </manifest>

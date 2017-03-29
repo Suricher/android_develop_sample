@@ -1,7 +1,5 @@
 package com.pinger.framework.model.net;
 
-import com.pinger.framework.base.BaseModel;
-
 import rx.Observable;
 
 /**
@@ -12,6 +10,5 @@ import rx.Observable;
 public interface ApiService<T> {
 
 
-    Observable<BaseModel<T>> requestData();
-
+    Observable<NetGoResponse<T>> requestData();
 }

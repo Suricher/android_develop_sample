@@ -77,21 +77,15 @@ public class NetGo {
                 .baseUrl(UrlConstant.TEST_HOME)
                 .build();
 
-
-
         mHomeApis = retrofit.create(HomeApis.class);
 
     }
 
-
     /**
      * =============================== API =================================
      */
-
     public static HomeApis getHomeApis() {
         System.out.println("============获取API===========");
-
-
         return mHomeApis;
     }
 

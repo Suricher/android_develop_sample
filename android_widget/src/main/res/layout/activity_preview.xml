@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    android:id="@+id/rootView"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <!--作为背景，进行透明动画-->
+    <View
+        android:id="@+id/photo_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"/>
+
 
     <com.pinger.widget.ninegridview.preview.HackyViewPager
         android:id="@+id/viewPager"
@@ -17,7 +26,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
-        android:text="1/4"
         android:textColor="#ffffff"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        tools:text="1/4"/>
 </RelativeLayout>

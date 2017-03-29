@@ -7,7 +7,6 @@ import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
@@ -16,16 +15,16 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.pinger.widget.R;
+import com.pinger.widget.ninegridview.GalleryPhotoView;
 import com.pinger.widget.ninegridview.ImageEntity;
 import com.pinger.widget.ninegridview.NineGridView;
 
 import java.util.List;
 
-import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 
-public class ImagePreviewAdapter extends PagerAdapter implements PhotoViewAttacher.OnPhotoTapListener {
+public class ImagePreviewAdapter extends PagerAdapter implements PhotoViewAttacher.OnViewTapListener {
 
     private List<ImageEntity> mImageEntities;
     private Context context;
@@ -53,32 +52,32 @@ public class ImagePreviewAdapter extends PagerAdapter implements PhotoViewAttach
         currentView = (View) object;
     }
 
-    public View getPrimaryItem() {
-        return currentView;
+    public GalleryPhotoView getPrimaryImageView() {
+        return (GalleryPhotoView) currentView.findViewById(R.id.pv);
     }
 
-    public ImageView getPrimaryImageView() {
-        return (ImageView) currentView.findViewById(R.id.pv);
-    }
 
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(ViewGroup container, final int position) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_photoview, container, false);
         final ProgressBar pb = (ProgressBar) view.findViewById(R.id.pb);
-        final PhotoView imageView = (PhotoView) view.findViewById(R.id.pv);
+        final GalleryPhotoView imageView = (GalleryPhotoView) view.findViewById(R.id.pv);
 
-        ImageEntity info = this.mImageEntities.get(position);
-        imageView.setOnPhotoTapListener(this);
+        final ImageEntity info = this.mImageEntities.get(position);
+        imageView.setOnViewTapListener(this);
+        imageView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                mListener.onLongClick(view, position, info.bigImageUrl);
+                return false;
+            }
+        });
         showExcessPic(info, imageView);
 
-        //如果需要加载的loading,需要自己改写,不能使用这个方法
-        // NineGridView.getImageLoader().onDisplayImage(view.getContext(), imageView, info.bigImageUrl);
-
-        pb.setVisibility(View.VISIBLE);
-        Glide.with(context).load(info.bigImageUrl)//
-                .placeholder(R.color.ic_default_placeholder)//
-                .error(R.color.ic_default_placeholder)//
-                .diskCacheStrategy(DiskCacheStrategy.ALL)//
+        Glide.with(context).load(info.bigImageUrl)
+                .placeholder(R.color.ic_default_placeholder)
+                .error(R.color.ic_default_placeholder)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -100,7 +99,7 @@ public class ImagePreviewAdapter extends PagerAdapter implements PhotoViewAttach
     /**
      * 展示过度图片
      */
-    private void showExcessPic(ImageEntity imageInfo, PhotoView imageView) {
+    private void showExcessPic(ImageEntity imageInfo, GalleryPhotoView imageView) {
         // 先获取大图的缓存图片
         Bitmap cacheImage = NineGridView.getImageLoader().getCacheImage(imageInfo.bigImageUrl);
         // 如果大图的缓存不存在,在获取小图的缓存
@@ -119,11 +118,18 @@ public class ImagePreviewAdapter extends PagerAdapter implements PhotoViewAttach
         container.removeView((View) object);
     }
 
-    /**
-     * 单击屏幕关闭
-     */
     @Override
-    public void onPhotoTap(View view, float x, float y) {
+    public void onViewTap(View view, float x, float y) {
         ((ImagePreviewActivity) context).finishActivityAnim();
+    }
+
+    public interface OnImageLongClickListener {
+        void onLongClick(View view, int position, String url);
+    }
+
+    public OnImageLongClickListener mListener;
+
+    public void setOnImageLongClickListener(OnImageLongClickListener listener) {
+        this.mListener = listener;
     }
 }

@@ -1,26 +1,20 @@
 package com.pinger.widget.ninegridview.preview;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.ImageView;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.pinger.widget.R;
+import com.pinger.widget.ninegridview.GalleryPhotoView;
 import com.pinger.widget.ninegridview.ImageEntity;
 
 import java.util.List;
@@ -30,36 +24,33 @@ public class ImagePreviewActivity extends AppCompatActivity implements ViewTreeO
 
     public static final String IMAGE_INFO = "IMAGE_INFO";
     public static final String CURRENT_ITEM = "CURRENT_ITEM";
-    public static final int ANIMATE_DURATION = 200;
+    public static final String IMAGE_RECT = "IMAGE_RECT";
 
     private RelativeLayout rootView;
 
-    private Animator mCurrentAnimator;
-
     private ImagePreviewAdapter imagePreviewAdapter;
     private List<ImageEntity> mImageEntities;
+    private List<Rect> mEndRects;
     private int currentItem;
-    private int imageHeight;
-    private int imageWidth;
-    private int screenWidth;
-    private int screenHeight;
+    private View container;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
         final TextView tv_pager = (TextView) findViewById(R.id.tv_pager);
         rootView = (RelativeLayout) findViewById(R.id.rootView);
+        container = findViewById(R.id.photo_container);
 
         DisplayMetrics metric = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metric);
-        screenWidth = metric.widthPixels;
-        screenHeight = metric.heightPixels;
 
         Intent intent = getIntent();
         mImageEntities = (List<ImageEntity>) intent.getSerializableExtra(IMAGE_INFO);
+        mEndRects = (List<Rect>) intent.getSerializableExtra(IMAGE_RECT);
         currentItem = intent.getIntExtra(CURRENT_ITEM, 0);
 
         imagePreviewAdapter = new ImagePreviewAdapter(this, mImageEntities);
@@ -74,6 +65,12 @@ public class ImagePreviewActivity extends AppCompatActivity implements ViewTreeO
             }
         });
         tv_pager.setText(String.format(getString(R.string.select), String.valueOf(currentItem + 1), String.valueOf(mImageEntities.size())));
+        imagePreviewAdapter.setOnImageLongClickListener(new ImagePreviewAdapter.OnImageLongClickListener() {
+            @Override
+            public void onLongClick(View view, int position, String url) {
+                Toast.makeText(ImagePreviewActivity.this, "长按第" + position + "条，图片URL为" + url, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -87,32 +84,9 @@ public class ImagePreviewActivity extends AppCompatActivity implements ViewTreeO
     @Override
     public boolean onPreDraw() {
         rootView.getViewTreeObserver().removeOnPreDrawListener(this);
-        final View view = imagePreviewAdapter.getPrimaryItem();
-        final ImageView imageView = imagePreviewAdapter.getPrimaryImageView();
-        computeImageWidthAndHeight(imageView);
-
-        final ImageEntity imageData = mImageEntities.get(currentItem);
-        final float vx = imageData.imageViewWidth * 1.0f / imageWidth;
-        final float vy = imageData.imageViewHeight * 1.0f / imageHeight;
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1.0f);
-        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                long duration = animation.getDuration();
-                long playTime = animation.getCurrentPlayTime();
-                float fraction = duration > 0 ? (float) playTime / duration : 1f;
-                if (fraction > 1) fraction = 1;
-                view.setTranslationX(evaluateInt(fraction, imageData.imageViewX + imageData.imageViewWidth / 2 - imageView.getWidth() / 2, 0));
-                view.setTranslationY(evaluateInt(fraction, imageData.imageViewY + imageData.imageViewHeight / 2 - imageView.getHeight() / 2, 0));
-                view.setScaleX(evaluateFloat(fraction, vx, 1));
-                view.setScaleY(evaluateFloat(fraction, vy, 1));
-                view.setAlpha(fraction);
-                rootView.setBackgroundColor(evaluateArgb(fraction, Color.TRANSPARENT, Color.BLACK));
-            }
-        });
-        addIntoListener(valueAnimator);
-        valueAnimator.setDuration(ANIMATE_DURATION);
-        valueAnimator.start();
+        final GalleryPhotoView photoView = imagePreviewAdapter.getPrimaryImageView();
+        final Rect startRect = mEndRects.get(currentItem);
+        photoView.playEnterAnim(startRect, container, null);
         return true;
     }
 
@@ -120,165 +94,26 @@ public class ImagePreviewActivity extends AppCompatActivity implements ViewTreeO
      * activity的退场动画
      */
     public void finishActivityAnim() {
+        final GalleryPhotoView currentPhotoView = imagePreviewAdapter.getPrimaryImageView();
+        if (currentPhotoView == null) {
+            super.finish();
+            return;
+        }
 
+        Rect endRect;
+        if (currentItem > 8) {
+            endRect = mEndRects.get(8);
+        } else {
+            endRect = mEndRects.get(currentItem);
+        }
 
-
-
-
-//
-//
-//        final View view = imagePreviewAdapter.getPrimaryItem();
-//        final ImageView imageView = imagePreviewAdapter.getPrimaryImageView();
-//        computeImageWidthAndHeight(imageView);
-//
-//        final ImageEntity imageData = mImageEntities.get(currentItem);
-//        final float vx = imageData.imageViewWidth * 1.0f / imageWidth;
-//        final float vy = imageData.imageViewHeight * 1.0f / imageHeight;
-//        final ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1.0f);
-//        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator animation) {
-//                long duration = animation.getDuration();
-//                long playTime = animation.getCurrentPlayTime();
-//                float fraction = duration > 0 ? (float) playTime / duration : 1f;
-//                if (fraction > 1) fraction = 1;
-//                view.setTranslationX(evaluateInt(fraction, 0, imageData.imageViewX + imageData.imageViewWidth / 2 - imageView.getWidth() / 2));
-//                view.setTranslationY(evaluateInt(fraction, 0, imageData.imageViewY + imageData.imageViewHeight / 2 - imageView.getHeight() / 2));
-//                view.setScaleX(evaluateFloat(fraction, 1, vx));
-//                view.setScaleY(evaluateFloat(fraction, 1, vy));
-//                view.setAlpha(1 - fraction);
-//                rootView.setBackgroundColor(evaluateArgb(fraction, Color.BLACK, Color.TRANSPARENT));
-//            }
-//        });
-//        addOutListener(valueAnimator);
-//        valueAnimator.setDuration(ANIMATE_DURATION);
-//        valueAnimator.start();
-    }
-
-    /**
-     * 计算图片的宽高
-     */
-    private void computeImageWidthAndHeight(ImageView imageView) {
-
-        // 获取真实大小
-        Drawable drawable = imageView.getDrawable();
-        int intrinsicHeight = drawable.getIntrinsicHeight();
-        int intrinsicWidth = drawable.getIntrinsicWidth();
-        // 计算出与屏幕的比例，用于比较以宽的比例为准还是高的比例为准，因为很多时候不是高度没充满，就是宽度没充满
-        float h = screenHeight * 1.0f / intrinsicHeight;
-        float w = screenWidth * 1.0f / intrinsicWidth;
-        if (h > w) h = w;
-        else w = h;
-
-        // 得出当宽高至少有一个充满的时候图片对应的宽高
-        imageHeight = (int) (intrinsicHeight * h);
-        imageWidth = (int) (intrinsicWidth * w);
-    }
-
-    /**
-     * 进场动画过程监听
-     */
-    private void addIntoListener(ValueAnimator valueAnimator) {
-        valueAnimator.addListener(new Animator.AnimatorListener() {
+        currentPhotoView.playExitAnim(endRect, container, new GalleryPhotoView.OnExitAnimEndListener() {
             @Override
-            public void onAnimationStart(Animator animation) {
-                rootView.setBackgroundColor(0x0);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
-        });
-    }
-
-    /**
-     * 退场动画过程监听
-     */
-    private void addOutListener(ValueAnimator valueAnimator) {
-        valueAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                rootView.setBackgroundColor(0x0);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                finish();
+            public void onExitAnimEnd() {
+                ImagePreviewActivity.super.finish();
+                // 禁用动画
                 overridePendingTransition(0, 0);
             }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
         });
-    }
-
-    /**
-     * Integer 估值器
-     */
-    public Integer evaluateInt(float fraction, Integer startValue, Integer endValue) {
-        int startInt = startValue;
-        return (int) (startInt + fraction * (endValue - startInt));
-    }
-
-    /**
-     * Float 估值器
-     */
-    public Float evaluateFloat(float fraction, Number startValue, Number endValue) {
-        float startFloat = startValue.floatValue();
-        return startFloat + fraction * (endValue.floatValue() - startFloat);
-    }
-
-    /**
-     * Argb 估值器
-     */
-    public int evaluateArgb(float fraction, int startValue, int endValue) {
-        int startA = (startValue >> 24) & 0xff;
-        int startR = (startValue >> 16) & 0xff;
-        int startG = (startValue >> 8) & 0xff;
-        int startB = startValue & 0xff;
-
-        int endA = (endValue >> 24) & 0xff;
-        int endR = (endValue >> 16) & 0xff;
-        int endG = (endValue >> 8) & 0xff;
-        int endB = endValue & 0xff;
-
-        return (startA + (int) (fraction * (endA - startA))) << 24//
-                | (startR + (int) (fraction * (endR - startR))) << 16//
-                | (startG + (int) (fraction * (endG - startG))) << 8//
-                | (startB + (int) (fraction * (endB - startB)));
-    }
-
-    private float calculateRatio(Rect startBounds, Rect finalBounds) {
-        float ratio;
-        if ((float) finalBounds.width() / finalBounds.height() > (float) startBounds.width() / startBounds.height()) {
-            // Extend start bounds horizontally
-            ratio = (float) startBounds.height() / finalBounds.height();
-            float startWidth = ratio * finalBounds.width();
-            float deltaWidth = (startWidth - startBounds.width()) / 2;
-            startBounds.left -= deltaWidth;
-            startBounds.right += deltaWidth;
-        }
-        else {
-            // Extend start bounds vertically
-            ratio = (float) startBounds.width() / finalBounds.width();
-            float startHeight = ratio * finalBounds.height();
-            float deltaHeight = (startHeight - startBounds.height()) / 2;
-            startBounds.top -= deltaHeight;
-            startBounds.bottom += deltaHeight;
-        }
-        return ratio;
     }
 }

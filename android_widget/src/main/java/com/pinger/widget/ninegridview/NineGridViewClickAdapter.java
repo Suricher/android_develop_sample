@@ -1,14 +1,13 @@
-package com.pinger.widget.ninegridview.preview;
+package com.pinger.widget.ninegridview;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
 
-import com.pinger.widget.ninegridview.ImageEntity;
-import com.pinger.widget.ninegridview.NineGridView;
-import com.pinger.widget.ninegridview.NineGridViewAdapter;
+import com.pinger.widget.ninegridview.preview.ImagePreviewActivity;
 
 import java.io.Serializable;
 import java.util.List;
@@ -23,7 +22,18 @@ public class NineGridViewClickAdapter extends NineGridViewAdapter {
     }
 
     @Override
-    protected void onImageItemClick(Context context, NineGridView nineGridView, int index, List<ImageEntity> imageEntities) {
+    protected void onImageItemClick(Context context, NineGridView nineGridView, int index, List<ImageEntity> imageEntities, List<Rect> imageRects) {
+        Intent intent = new Intent(context, ImagePreviewActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(ImagePreviewActivity.IMAGE_INFO, (Serializable) imageEntities);
+        bundle.putSerializable(ImagePreviewActivity.IMAGE_RECT, (Serializable) imageRects);
+        bundle.putInt(ImagePreviewActivity.CURRENT_ITEM, index);
+        intent.putExtras(bundle);
+        context.startActivity(intent);
+        // 禁用动画
+        ((Activity) context).overridePendingTransition(0, 0);
+
+        // 纠正图片位置
         for (int i = 0; i < imageEntities.size(); i++) {
             ImageEntity imageEntity = imageEntities.get(i);
             View imageView;
@@ -37,17 +47,10 @@ public class NineGridViewClickAdapter extends NineGridViewAdapter {
             imageEntity.imageViewHeight = imageView.getHeight();
             int[] points = new int[2];
             imageView.getLocationInWindow(points);
+            // 图片位置
             imageEntity.imageViewX = points[0];
             imageEntity.imageViewY = points[1] - statusHeight;
         }
-
-        Intent intent = new Intent(context, ImagePreviewActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(ImagePreviewActivity.IMAGE_INFO, (Serializable) imageEntities);
-        bundle.putInt(ImagePreviewActivity.CURRENT_ITEM, index);
-        intent.putExtras(bundle);
-        context.startActivity(intent);
-        ((Activity) context).overridePendingTransition(0, 0);
     }
 
     /**

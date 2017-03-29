@@ -3,6 +3,9 @@ package com.pinger.widget.ninegridview;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -14,6 +17,7 @@ import android.widget.ImageView;
 import com.pinger.widget.R;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class NineGridView extends ViewGroup {
@@ -150,11 +154,10 @@ public class NineGridView extends ViewGroup {
             }
         } else {
             int oldViewCount = mImageInfo.size();
-            int newViewCount = imageCount;
-            if (oldViewCount > newViewCount) {
-                removeViews(newViewCount, oldViewCount - newViewCount);
-            } else if (oldViewCount < newViewCount) {
-                for (int i = oldViewCount; i < newViewCount; i++) {
+            if (oldViewCount > imageCount) {
+                removeViews(imageCount, oldViewCount - imageCount);
+            } else if (oldViewCount < imageCount) {
+                for (int i = oldViewCount; i < imageCount; i++) {
                     ImageView iv = getImageView(i);
                     if (iv == null) return;
                     addView(iv, generateDefaultLayoutParams());
@@ -185,12 +188,57 @@ public class NineGridView extends ViewGroup {
             imageView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mAdapter.onImageItemClick(getContext(), NineGridView.this, position, mAdapter.getImageEntities());
+                    mAdapter.onImageItemClick(getContext(), NineGridView.this, position, mAdapter.getImageEntities(),getImageViewsDrawableRects());
                 }
             });
             imageViews.add(imageView);
         }
         return imageView;
+    }
+
+    /**
+     * 获取图片的资源矩阵集合
+     * @return
+     */
+    public List<Rect> getImageViewsDrawableRects() {
+        int childCount = this.getChildCount();
+        if (childCount <= 0) {
+            return null;
+        } else {
+            LinkedList<Rect> viewRects = new LinkedList<>();
+
+            for (int i = 0; i < childCount; ++i) {
+                View v = this.getChildAt(i);
+                if (v != null) {
+                    Rect rect = this.getDrawableBoundsInView((ImageView) v);
+                    viewRects.add(rect);
+                }
+            }
+
+            return viewRects;
+        }
+    }
+
+    private Rect getDrawableBoundsInView(ImageView iv) {
+        if (iv != null && iv.getDrawable() != null) {
+            Drawable d = iv.getDrawable();
+            Rect result = new Rect();
+            iv.getGlobalVisibleRect(result);
+            Rect tDrawableRect = d.getBounds();
+            Matrix drawableMatrix = iv.getImageMatrix();
+            float[] values = new float[9];
+            if (drawableMatrix != null) {
+                drawableMatrix.getValues(values);
+            }
+
+            result.left += (int) values[2];
+            result.top += (int) values[5];
+            result.right = (int) ((float) result.left + (float) tDrawableRect.width() * (values[0] == 0.0F ? 1.0F : values[0]));
+            result.bottom = (int) ((float) result.top + (float) tDrawableRect.height() * (values[4] == 0.0F ? 1.0F : values[4]));
+            return result;
+        } else {
+            return null;
+        }
     }
 
     /**

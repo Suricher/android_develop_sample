@@ -69,7 +69,6 @@ public class NineGridViewWrapper extends AppCompatImageView {
                      * 此处应该是要使用的 mutate()，但是在部分手机上会出现点击后变白的现象，所以没有使用
                      * 目前这种解决方案没有问题
                      */
-//                    drawable.mutate().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
                     drawable.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
                     ViewCompat.postInvalidateOnAnimation(this);
                 }
@@ -80,7 +79,6 @@ public class NineGridViewWrapper extends AppCompatImageView {
             case MotionEvent.ACTION_UP:
                 Drawable drawableUp = getDrawable();
                 if (drawableUp != null) {
-//                    drawableUp.mutate().clearColorFilter();
                     drawableUp.clearColorFilter();
                     ViewCompat.postInvalidateOnAnimation(this);
                 }

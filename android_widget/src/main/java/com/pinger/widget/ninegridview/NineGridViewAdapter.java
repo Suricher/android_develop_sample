@@ -1,6 +1,7 @@
 package com.pinger.widget.ninegridview;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.widget.ImageView;
 
 import com.pinger.widget.R;
@@ -20,13 +21,13 @@ public abstract class NineGridViewAdapter implements Serializable {
 
     /**
      * 如果要实现图片点击的逻辑，重写此方法即可
-     *
-     * @param context      上下文
+     *  @param context      上下文
      * @param nineGridView 九宫格控件
      * @param index        当前点击图片的的索引
      * @param imageInfo    图片地址的数据集合
+     * @param imageRects
      */
-    protected void onImageItemClick(Context context, NineGridView nineGridView, int index, List<ImageEntity> imageInfo) {
+    protected void onImageItemClick(Context context, NineGridView nineGridView, int index, List<ImageEntity> imageInfo, List<Rect> imageRects) {
     }
 
     /**
