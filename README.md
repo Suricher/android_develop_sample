@@ -12,7 +12,8 @@
 
 
 ### android_component(项目组件化模块)
-> 项目组件化具体实现。
+> [项目组件化具体实现](https://github.com/PingerOne/android_develop_component/)
+
 
 ### android_animation(动画模块)
 > 开发中经常用到的动画都放在这里。
