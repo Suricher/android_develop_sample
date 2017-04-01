@@ -17,7 +17,7 @@ public abstract class BaseFragment extends Fragment {
     }
 
 
-    protected abstract <T extends BaseFragment > T getInstance();
+    protected abstract BaseFragment  newInstance();
 
 
 

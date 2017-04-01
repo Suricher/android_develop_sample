@@ -25,9 +25,6 @@ public class HomeFragment extends BaseFragment implements MainContract.View {
     @Inject
     public MainPresenter mPresenter;
 
-    public static HomeFragment newInstance() {
-        return new HomeFragment();
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,6 +36,12 @@ public class HomeFragment extends BaseFragment implements MainContract.View {
                 .build()
                 .inject(this);
     }
+
+    @Override
+    protected BaseFragment newInstance() {
+        return new HomeFragment();
+    }
+
 
     @Override
     public void onResume() {

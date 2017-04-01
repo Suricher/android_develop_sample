@@ -1,0 +1,29 @@
+
+//统一管理所有module和library的依赖版本
+ext {
+
+    // android的依赖
+    android = [
+            compileSdkVersion: 25,
+            buildToolsVersion: "25.0.2",
+            minSdkVersion    : 21,
+            targetSdkVersion : 25,
+            versionCode      : 1,
+            versionName      : "1.0"
+    ]
+
+    // 具体的library的依赖
+    photoview = [
+            versionCode: 3,
+            versionName: "1.2"
+    ]
+
+
+
+    // android的依赖
+    dependencies = [
+            appcompat_v7: 'com.android.support:appcompat-v7:25.1.1',
+            design      : 'com.android.support:design:25.2.0',
+            support_util: 'com.android.support:support-core-utils:25.1.0'
+    ]
+}
