@@ -1,4 +1,4 @@
-package com.pinger.widget.ninegridview.preview;
+package com.pinger.widget.imagepreview.preview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,9 +15,9 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.pinger.widget.R;
-import com.pinger.widget.ninegridview.GalleryPhotoView;
-import com.pinger.widget.ninegridview.ImageEntity;
-import com.pinger.widget.ninegridview.NineGridView;
+import com.pinger.widget.imagepreview.AnimPhotoView;
+import com.pinger.widget.imagepreview.ImageEntity;
+import com.pinger.widget.imagepreview.ImagePreview;
 
 import java.util.List;
 
@@ -52,8 +52,8 @@ public class ImagePreviewAdapter extends PagerAdapter implements PhotoViewAttach
         currentView = (View) object;
     }
 
-    public GalleryPhotoView getPrimaryImageView() {
-        return (GalleryPhotoView) currentView.findViewById(R.id.pv);
+    public AnimPhotoView getPrimaryImageView() {
+        return (AnimPhotoView) currentView.findViewById(R.id.pv);
     }
 
 
@@ -61,7 +61,7 @@ public class ImagePreviewAdapter extends PagerAdapter implements PhotoViewAttach
     public Object instantiateItem(ViewGroup container, final int position) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_photoview, container, false);
         final ProgressBar pb = (ProgressBar) view.findViewById(R.id.pb);
-        final GalleryPhotoView imageView = (GalleryPhotoView) view.findViewById(R.id.pv);
+        final AnimPhotoView imageView = (AnimPhotoView) view.findViewById(R.id.pv);
 
         final ImageEntity info = this.mImageEntities.get(position);
         imageView.setOnViewTapListener(this);
@@ -99,12 +99,12 @@ public class ImagePreviewAdapter extends PagerAdapter implements PhotoViewAttach
     /**
      * 展示过度图片
      */
-    private void showExcessPic(ImageEntity imageInfo, GalleryPhotoView imageView) {
+    private void showExcessPic(ImageEntity imageInfo, AnimPhotoView imageView) {
         // 先获取大图的缓存图片
-        Bitmap cacheImage = NineGridView.getImageLoader().getCacheImage(imageInfo.bigImageUrl);
+        Bitmap cacheImage = ImagePreview.getImageLoader().getCacheImage(imageInfo.bigImageUrl);
         // 如果大图的缓存不存在,在获取小图的缓存
         if (cacheImage == null)
-            cacheImage = NineGridView.getImageLoader().getCacheImage(imageInfo.thumbnailUrl);
+            cacheImage = ImagePreview.getImageLoader().getCacheImage(imageInfo.thumbnailUrl);
         // 如果没有任何缓存,使用默认图片,否者使用缓存
         if (cacheImage == null) {
             imageView.setImageResource(R.drawable.ic_default_color);

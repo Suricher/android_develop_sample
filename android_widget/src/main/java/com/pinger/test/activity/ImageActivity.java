@@ -1,4 +1,4 @@
-package com.pinger.widget.activity;
+package com.pinger.test.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,28 +7,29 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.pinger.widget.R;
-import com.pinger.widget.ninegridview.ImageEntity;
-import com.pinger.widget.ninegridview.NineGridView;
-import com.pinger.widget.ninegridview.NineGridViewClickAdapter;
+import com.pinger.widget.imagepreview.ImageEntity;
+import com.pinger.widget.imagepreview.ImagePreview;
+import com.pinger.widget.imagepreview.ImagePreviewClickAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Pinger
- * @since 2017/3/27 0027 下午 2:45
+ * @since 2017/4/1 20:47
  */
-public class MainActivity extends AppCompatActivity {
+
+public class ImageActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_image);
         initImageViewer(1);
     }
 
     private void initImageViewer(int count) {
-        NineGridView nineGridView = (NineGridView) findViewById(R.id.nineGrid);
+        ImagePreview nineGridView = (ImagePreview) findViewById(R.id.nineGrid);
         List<ImageEntity> imageEntities = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             ImageEntity entity = new ImageEntity();
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
             imageEntities.add(entity);
         }
 
-        nineGridView.setAdapter(new NineGridViewClickAdapter(this, imageEntities));
+        nineGridView.setAdapter(new ImagePreviewClickAdapter(this, imageEntities));
 
         // 只有一张图片时
         if (imageEntities.size() == 1) {

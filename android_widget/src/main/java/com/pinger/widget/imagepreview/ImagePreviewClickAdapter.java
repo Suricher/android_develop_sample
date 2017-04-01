@@ -1,4 +1,4 @@
-package com.pinger.widget.ninegridview;
+package com.pinger.widget.imagepreview;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,22 +7,22 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
 
-import com.pinger.widget.ninegridview.preview.ImagePreviewActivity;
+import com.pinger.widget.imagepreview.preview.ImagePreviewActivity;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class NineGridViewClickAdapter extends NineGridViewAdapter {
+public class ImagePreviewClickAdapter extends ImagePreviewAdapter {
 
     private int statusHeight;
 
-    public NineGridViewClickAdapter(Context context, List<ImageEntity> imageInfo) {
+    public ImagePreviewClickAdapter(Context context, List<ImageEntity> imageInfo) {
         super(context, imageInfo);
         statusHeight = getStatusHeight(context);
     }
 
     @Override
-    protected void onImageItemClick(Context context, NineGridView nineGridView, int index, List<ImageEntity> imageEntities, List<Rect> imageRects) {
+    protected void onImageItemClick(Context context, ImagePreview nineGridView, int index, List<ImageEntity> imageEntities, List<Rect> imageRects) {
         Intent intent = new Intent(context, ImagePreviewActivity.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable(ImagePreviewActivity.IMAGE_INFO, (Serializable) imageEntities);

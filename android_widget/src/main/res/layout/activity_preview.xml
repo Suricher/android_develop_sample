@@ -14,7 +14,7 @@
         android:background="@android:color/black"/>
 
 
-    <com.pinger.widget.ninegridview.preview.HackyViewPager
+    <com.pinger.widget.imagepreview.preview.HackyViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

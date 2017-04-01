@@ -1,4 +1,4 @@
-package com.pinger.widget.app;
+package com.pinger.test.app;
 
 import android.app.Application;
 import android.content.Context;
@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.pinger.widget.R;
-import com.pinger.widget.ninegridview.NineGridView;
+import com.pinger.widget.imagepreview.ImagePreview;
 
 /**
  * @author Pinger
@@ -19,7 +19,7 @@ public class TestApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        NineGridView.setImageLoader(new NineGridView.ImageLoader() {
+        ImagePreview.setImageLoader(new ImagePreview.ImageLoader() {
             @Override
             public void onDisplayImage(Context context, ImageView imageView, String url) {
                 Glide.with(context).load(url)//

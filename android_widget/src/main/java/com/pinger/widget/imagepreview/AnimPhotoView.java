@@ -1,4 +1,4 @@
-package com.pinger.widget.ninegridview;
+package com.pinger.widget.imagepreview;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -11,7 +11,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,7 +23,7 @@ import android.widget.Scroller;
 
 import uk.co.senab.photoview.PhotoView;
 
-public class GalleryPhotoView extends PhotoView {
+public class AnimPhotoView extends PhotoView {
     private static final int ANIM_DURATION = 300;
 
     private BitmapTransform bitmapTransform;
@@ -36,15 +35,15 @@ public class GalleryPhotoView extends PhotoView {
     private Point globalOffset;
     private RectF clipBounds;
 
-    public GalleryPhotoView(Context context) {
+    public AnimPhotoView(Context context) {
         super(context);
     }
 
-    public GalleryPhotoView(Context context, AttributeSet attr) {
+    public AnimPhotoView(Context context, AttributeSet attr) {
         super(context, attr);
     }
 
-    public GalleryPhotoView(Context context, AttributeSet attr, int defStyle) {
+    public AnimPhotoView(Context context, AttributeSet attr, int defStyle) {
         super(context, attr, defStyle);
     }
 

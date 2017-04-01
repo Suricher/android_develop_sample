@@ -3,7 +3,7 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent">
 
-    <com.pinger.widget.ninegridview.GalleryPhotoView
+    <com.pinger.widget.imagepreview.AnimPhotoView
         android:id="@+id/pv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

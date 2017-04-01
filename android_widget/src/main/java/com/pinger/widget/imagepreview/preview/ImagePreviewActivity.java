@@ -1,4 +1,4 @@
-package com.pinger.widget.ninegridview.preview;
+package com.pinger.widget.imagepreview.preview;
 
 import android.content.Intent;
 import android.graphics.Rect;
@@ -14,8 +14,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.pinger.widget.R;
-import com.pinger.widget.ninegridview.GalleryPhotoView;
-import com.pinger.widget.ninegridview.ImageEntity;
+import com.pinger.widget.imagepreview.AnimPhotoView;
+import com.pinger.widget.imagepreview.ImageEntity;
 
 import java.util.List;
 
@@ -84,7 +84,7 @@ public class ImagePreviewActivity extends AppCompatActivity implements ViewTreeO
     @Override
     public boolean onPreDraw() {
         rootView.getViewTreeObserver().removeOnPreDrawListener(this);
-        final GalleryPhotoView photoView = imagePreviewAdapter.getPrimaryImageView();
+        final AnimPhotoView photoView = imagePreviewAdapter.getPrimaryImageView();
         final Rect startRect = mEndRects.get(currentItem);
         photoView.playEnterAnim(startRect, container, null);
         return true;
@@ -94,7 +94,7 @@ public class ImagePreviewActivity extends AppCompatActivity implements ViewTreeO
      * activity的退场动画
      */
     public void finishActivityAnim() {
-        final GalleryPhotoView currentPhotoView = imagePreviewAdapter.getPrimaryImageView();
+        final AnimPhotoView currentPhotoView = imagePreviewAdapter.getPrimaryImageView();
         if (currentPhotoView == null) {
             super.finish();
             return;
@@ -107,7 +107,7 @@ public class ImagePreviewActivity extends AppCompatActivity implements ViewTreeO
             endRect = mEndRects.get(currentItem);
         }
 
-        currentPhotoView.playExitAnim(endRect, container, new GalleryPhotoView.OnExitAnimEndListener() {
+        currentPhotoView.playExitAnim(endRect, container, new AnimPhotoView.OnExitAnimEndListener() {
             @Override
             public void onExitAnimEnd() {
                 ImagePreviewActivity.super.finish();

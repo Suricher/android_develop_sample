@@ -1,4 +1,4 @@
-package com.pinger.widget.ninegridview;
+package com.pinger.widget.imagepreview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class NineGridView extends ViewGroup {
+public class ImagePreview extends ViewGroup {
 
     public static final int MODE_FILL = 0;          //填充模式，类似于微信
     public static final int MODE_GRID = 1;          //网格模式，类似于QQ，4张图会 2X2布局
@@ -40,29 +40,29 @@ public class NineGridView extends ViewGroup {
 
     private List<ImageView> imageViews;
     private List<ImageEntity> mImageInfo;
-    private NineGridViewAdapter mAdapter;
+    private ImagePreviewAdapter mAdapter;
 
-    public NineGridView(Context context) {
+    public ImagePreview(Context context) {
         this(context, null);
     }
 
-    public NineGridView(Context context, AttributeSet attrs) {
+    public ImagePreview(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public NineGridView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ImagePreview(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         DisplayMetrics dm = context.getResources().getDisplayMetrics();
         gridSpacing = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, gridSpacing, dm);
         singleImageSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, singleImageSize, dm);
 
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.NineGridView);
-        gridSpacing = (int) a.getDimension(R.styleable.NineGridView_ngv_gridSpacing, gridSpacing);
-        singleImageSize = a.getDimensionPixelSize(R.styleable.NineGridView_ngv_singleImageSize, singleImageSize);
-        singleImageRatio = a.getFloat(R.styleable.NineGridView_ngv_singleImageRatio, singleImageRatio);
-        maxImageSize = a.getInt(R.styleable.NineGridView_ngv_maxSize, maxImageSize);
-        mode = a.getInt(R.styleable.NineGridView_ngv_mode, mode);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ImagePreview);
+        gridSpacing = (int) a.getDimension(R.styleable.ImagePreview_ngv_gridSpacing, gridSpacing);
+        singleImageSize = a.getDimensionPixelSize(R.styleable.ImagePreview_ngv_singleImageSize, singleImageSize);
+        singleImageRatio = a.getFloat(R.styleable.ImagePreview_ngv_singleImageRatio, singleImageRatio);
+        maxImageSize = a.getInt(R.styleable.ImagePreview_ngv_maxSize, maxImageSize);
+        mode = a.getInt(R.styleable.ImagePreview_ngv_mode, mode);
         a.recycle();
 
         imageViews = new ArrayList<>();
@@ -117,7 +117,7 @@ public class NineGridView extends ViewGroup {
     /**
      * 设置适配器
      */
-    public void setAdapter(@NonNull NineGridViewAdapter adapter) {
+    public void setAdapter(@NonNull ImagePreviewAdapter adapter) {
         mAdapter = adapter;
         List<ImageEntity> imageEntities = adapter.getImageEntities();
 
@@ -167,8 +167,8 @@ public class NineGridView extends ViewGroup {
         //修改最后一个条目，决定是否显示更多
         if (adapter.getImageEntities().size() > maxImageSize) {
             View child = getChildAt(maxImageSize - 1);
-            if (child instanceof NineGridViewWrapper) {
-                NineGridViewWrapper imageView = (NineGridViewWrapper) child;
+            if (child instanceof ImagePreviewWrapper) {
+                ImagePreviewWrapper imageView = (ImagePreviewWrapper) child;
                 imageView.setMoreNum(adapter.getImageEntities().size() - maxImageSize);
             }
         }
@@ -188,7 +188,7 @@ public class NineGridView extends ViewGroup {
             imageView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mAdapter.onImageItemClick(getContext(), NineGridView.this, position, mAdapter.getImageEntities(),getImageViewsDrawableRects());
+                    mAdapter.onImageItemClick(getContext(), ImagePreview.this, position, mAdapter.getImageEntities(),getImageViewsDrawableRects());
                 }
             });
             imageViews.add(imageView);

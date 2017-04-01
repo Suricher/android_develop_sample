@@ -1,4 +1,4 @@
-package com.pinger.widget.ninegridview;
+package com.pinger.widget.imagepreview;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -9,12 +9,12 @@ import com.pinger.widget.R;
 import java.io.Serializable;
 import java.util.List;
 
-public abstract class NineGridViewAdapter implements Serializable {
+public abstract class ImagePreviewAdapter implements Serializable {
 
     protected Context context;
     private List<ImageEntity> imageEntities;
 
-    public NineGridViewAdapter(Context context, List<ImageEntity> imageEntities) {
+    public ImagePreviewAdapter(Context context, List<ImageEntity> imageEntities) {
         this.context = context;
         this.imageEntities = imageEntities;
     }
@@ -27,7 +27,7 @@ public abstract class NineGridViewAdapter implements Serializable {
      * @param imageInfo    图片地址的数据集合
      * @param imageRects
      */
-    protected void onImageItemClick(Context context, NineGridView nineGridView, int index, List<ImageEntity> imageInfo, List<Rect> imageRects) {
+    protected void onImageItemClick(Context context, ImagePreview nineGridView, int index, List<ImageEntity> imageInfo, List<Rect> imageRects) {
     }
 
     /**
@@ -38,7 +38,7 @@ public abstract class NineGridViewAdapter implements Serializable {
      * @return 生成的 ImageView
      */
     protected ImageView generateImageView(Context context) {
-        NineGridViewWrapper imageView = new NineGridViewWrapper(context);
+        ImagePreviewWrapper imageView = new ImagePreviewWrapper(context);
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         imageView.setImageResource(R.drawable.ic_default_color);
         return imageView;

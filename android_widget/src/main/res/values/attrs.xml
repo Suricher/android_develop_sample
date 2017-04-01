@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="NineGridView">
+    <declare-styleable name="ImagePreview">
         <attr name="ngv_singleImageSize" format="dimension"/>
         <attr name="ngv_singleImageRatio" format="float"/>
         <attr name="ngv_gridSpacing" format="dimension"/>

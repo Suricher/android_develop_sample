@@ -1,18 +1,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical">
 
-    <com.pinger.widget.ninegridview.NineGridView
-        android:id="@+id/nineGrid"
-        android:layout_width="match_parent"
+    <Button
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        app:ngv_gridSpacing="3dp"
-        app:ngv_maxSize="9"
-        app:ngv_mode="grid"
-        app:ngv_singleImageRatio="1"
-        app:ngv_singleImageSize="250dp"/>
+        android:onClick="imagePreview"
+        android:text="图片预览"/>
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="banner"
+        android:text="Banner"/>
+
 
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.pinger.widget.ninegridview;
+package com.pinger.widget.imagepreview;
 
 import java.io.Serializable;
 
