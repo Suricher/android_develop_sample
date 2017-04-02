@@ -58,11 +58,11 @@ public class ImagePreview extends ViewGroup {
         singleImageSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, singleImageSize, dm);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ImagePreview);
-        gridSpacing = (int) a.getDimension(R.styleable.ImagePreview_ngv_gridSpacing, gridSpacing);
-        singleImageSize = a.getDimensionPixelSize(R.styleable.ImagePreview_ngv_singleImageSize, singleImageSize);
-        singleImageRatio = a.getFloat(R.styleable.ImagePreview_ngv_singleImageRatio, singleImageRatio);
-        maxImageSize = a.getInt(R.styleable.ImagePreview_ngv_maxSize, maxImageSize);
-        mode = a.getInt(R.styleable.ImagePreview_ngv_mode, mode);
+        gridSpacing = (int) a.getDimension(R.styleable.ImagePreview_imageGridSpacing, gridSpacing);
+        singleImageSize = a.getDimensionPixelSize(R.styleable.ImagePreview_imageSingleSize, singleImageSize);
+        singleImageRatio = a.getFloat(R.styleable.ImagePreview_imageSingleRatio, singleImageRatio);
+        maxImageSize = a.getInt(R.styleable.ImagePreview_imageMaxSize, maxImageSize);
+        mode = a.getInt(R.styleable.ImagePreview_imageDisplayMode, mode);
         a.recycle();
 
         imageViews = new ArrayList<>();
@@ -188,7 +188,7 @@ public class ImagePreview extends ViewGroup {
             imageView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mAdapter.onImageItemClick(getContext(), ImagePreview.this, position, mAdapter.getImageEntities(),getImageViewsDrawableRects());
+                    mAdapter.onImageItemClick(getContext(), ImagePreview.this, position, mAdapter.getImageEntities(), getImageViewsDrawableRects());
                 }
             });
             imageViews.add(imageView);
@@ -198,6 +198,7 @@ public class ImagePreview extends ViewGroup {
 
     /**
      * 获取图片的资源矩阵集合
+     *
      * @return
      */
     public List<Rect> getImageViewsDrawableRects() {

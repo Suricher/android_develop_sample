@@ -43,8 +43,8 @@ public class ImagePreviewClickAdapter extends ImagePreviewAdapter {
                 //如果图片的数量大于显示的数量，则超过部分的返回动画统一退回到最后一个图片的位置
                 imageView = nineGridView.getChildAt(nineGridView.getMaxSize() - 1);
             }
-            imageEntity.imageViewWidth = imageView.getWidth();
-            imageEntity.imageViewHeight = imageView.getHeight();
+            imageEntity.imageWidth = imageView.getWidth();
+            imageEntity.imageHeight = imageView.getHeight();
             int[] points = new int[2];
             imageView.getLocationInWindow(points);
             // 图片位置

@@ -29,23 +29,23 @@ public class ImageActivity extends AppCompatActivity {
     }
 
     private void initImageViewer(int count) {
-        ImagePreview nineGridView = (ImagePreview) findViewById(R.id.nineGrid);
+        ImagePreview imagePreview = (ImagePreview) findViewById(R.id.nineGrid);
         List<ImageEntity> imageEntities = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             ImageEntity entity = new ImageEntity();
             entity.bigImageUrl = "http://s1.dwstatic.com/group1/M00/A1/56/0eb8a499b898cf716f1fa8a30039ab10.jpg";
             entity.thumbnailUrl = "http://s1.dwstatic.com/group1/M00/A1/56/0eb8a499b898cf716f1fa8a30039ab10.jpg";
-            entity.imageViewWidth = 600;
-            entity.imageViewHeight = 439;
+            entity.imageWidth = 600;
+            entity.imageHeight = 439;
             imageEntities.add(entity);
         }
 
-        nineGridView.setAdapter(new ImagePreviewClickAdapter(this, imageEntities));
+        imagePreview.setAdapter(new ImagePreviewClickAdapter(this, imageEntities));
 
         // 只有一张图片时
         if (imageEntities.size() == 1) {
             // 适配单张图片
-            nineGridView.setSingleImageRatio(imageEntities.get(0).imageViewHeight * 1.0f / imageEntities.get(0).imageViewHeight);
+            imagePreview.setSingleImageRatio(imageEntities.get(0).imageWidth * 1.0f / imageEntities.get(0).imageHeight);
         }
     }
 

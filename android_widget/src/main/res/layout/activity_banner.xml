@@ -5,6 +5,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
     tools:context="com.pinger.test.activity.BannerActivity">
+
+    <com.pinger.widget.banner.BannerView
+        android:id="@+id/bannerView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:bannerPageAlpha="1.0"
+        app:bannerPageMargin="8dp"
+        app:bannerPagePercent="0.8"
+        app:bannerPageScale="0.8"
+        app:bannerAnimScroll="true"
+        app:bannerAutoScroll="true"
+        app:bannerScrollDuration="4000"
+        app:bannerAnimDuration="1500"/>
 
 </android.support.constraint.ConstraintLayout>

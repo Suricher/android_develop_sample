@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,30 +22,16 @@ import java.util.List;
 public abstract class BannerBaseAdapter<T> extends PagerAdapter {
 
     private Context mContext;
-    private List<T> mDatas;
+    private List<T> mDatas = new ArrayList<>();
     private OnPageTouchListener mListener;
     private long mDownTime;
-    private int mLayoutResID;
     private View mConvertView;
+    private BannerView mBannerView;
 
-    public BannerBaseAdapter(Context context, int layoutResID) {
-        init(context, new ArrayList<T>(), layoutResID);
-    }
-
-    public BannerBaseAdapter(Context context, T[] objects, int layoutResID) {
-        init(context, Arrays.asList(objects), layoutResID);
-    }
-
-    public BannerBaseAdapter(Context context, List<T> datas, int layoutResID) {
-        init(context, datas, layoutResID);
-    }
-
-
-    private void init(Context context, List<T> datas, int layoutResID) {
+    public BannerBaseAdapter(Context context) {
         mContext = context;
-        mDatas = new ArrayList<>(datas);
-        mLayoutResID = layoutResID;
     }
+
 
     @Override
     public int getCount() {
@@ -64,13 +49,15 @@ public abstract class BannerBaseAdapter<T> extends PagerAdapter {
     }
 
 
-    protected T getItem(int position) {
+    public T getItem(int position) {
         return position >= mDatas.size() ? mDatas.get(0) : mDatas.get(position);
     }
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        mConvertView = LayoutInflater.from(mContext).inflate(mLayoutResID, null);
+        mConvertView = LayoutInflater.from(mContext).inflate(getLayoutResID(), null);
+        mConvertView.setClickable(true);
+
         if (mDatas != null && mDatas.size() != 0) {
             position = position % mDatas.size();
         }
@@ -116,10 +103,14 @@ public abstract class BannerBaseAdapter<T> extends PagerAdapter {
         return mConvertView;
     }
 
+
     public void setData(List<T> datas) {
         if (datas == null) return;
         this.mDatas = new ArrayList<>(datas);
         notifyDataSetChanged();
+        if (mBannerView != null) {
+            mBannerView.resetCurrentPosition(datas.size());
+        }
     }
 
 
@@ -146,6 +137,7 @@ public abstract class BannerBaseAdapter<T> extends PagerAdapter {
         return this;
     }
 
+
     /**
      * 获取Item对象
      *
@@ -156,10 +148,20 @@ public abstract class BannerBaseAdapter<T> extends PagerAdapter {
     }
 
     // 绑定视图和数据
+    protected abstract int getLayoutResID();
+
     protected abstract void convert(View convertView, T data);
 
     public void setOnPageTouchListener(OnPageTouchListener<T> listener) {
         this.mListener = listener;
+    }
+
+    public int getRealCount() {
+        return mDatas == null ? 0 : mDatas.size();
+    }
+
+    public void setBannerView(BannerView bannerView) {
+        this.mBannerView = bannerView;
     }
 
     /**
@@ -172,6 +174,4 @@ public abstract class BannerBaseAdapter<T> extends PagerAdapter {
 
         void onPageUp();
     }
-
-
 }

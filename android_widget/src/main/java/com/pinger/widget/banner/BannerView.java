@@ -1,14 +1,19 @@
 package com.pinger.widget.banner;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -25,7 +30,9 @@ import java.lang.reflect.Field;
 /**
  * @author Pinger
  * @since 2017/3/8 0008 下午 3:26
- * 自定义无限轮转的海报控件，抽离了适配器和滑动事件，更加轻便
+ * 自定义无限轮转的海报控件，抽离了适配器和滑动事件，更加轻便。
+ * 请在布局使用当前类，相关属性可以通过布局或者代码设置，
+ * 适配器继承BannerBaseAdapter，指定数据类型，填充布局即可
  */
 public class BannerView extends FrameLayout {
 
@@ -42,9 +49,11 @@ public class BannerView extends FrameLayout {
     private float alphaMin = 0.8f;
 
     // 自动轮播间隔时长
-    private long mDuration = 4000;
+    private long mScrollDuration = 4000;
+    private long mAnimDuration = 1200;
     // 是否是动画滚动
     private boolean isAnimScroll;
+    private boolean isAutoScroll;
 
     private View mRootView;
     private Handler mHandler = new Handler(Looper.getMainLooper());
@@ -61,8 +70,25 @@ public class BannerView extends FrameLayout {
 
     public BannerView(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        initAttrs(context, attrs);
         initView();
         initEvent();
+    }
+
+    private void initAttrs(Context context, AttributeSet attrs) {
+        DisplayMetrics dm = context.getResources().getDisplayMetrics();
+        pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, pageMargin, dm);
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BannerView);
+        pageMargin = (int) a.getDimension(R.styleable.BannerView_bannerPageMargin, pageMargin);
+        pagePercent = a.getFloat(R.styleable.BannerView_bannerPagePercent, pagePercent);
+        scaleMin = a.getFloat(R.styleable.BannerView_bannerPageScale, scaleMin);
+        alphaMin = a.getFloat(R.styleable.BannerView_bannerPageAlpha, alphaMin);
+        mScrollDuration = a.getInteger(R.styleable.BannerView_bannerScrollDuration, (int) mScrollDuration);
+        mAnimDuration = a.getInteger(R.styleable.BannerView_bannerAnimDuration, (int) mAnimDuration);
+        isAnimScroll = a.getBoolean(R.styleable.BannerView_bannerAnimScroll, isAnimScroll);
+        isAutoScroll = a.getBoolean(R.styleable.BannerView_bannerAutoScroll, isAutoScroll);
+        a.recycle();
     }
 
 
@@ -77,11 +103,8 @@ public class BannerView extends FrameLayout {
         params.gravity = Gravity.CENTER;
         mViewPager.setLayoutParams(params);
         mViewPager.setPageMargin(pageMargin);
-        mViewPager.setPageTransformer(false, new BannerPageTransformer(scaleMin, alphaMin));
-        mViewPager.setOffscreenPageLimit(10);
-
-        // 自动轮播任务
-        mScrollTask = new AutoScrollTask();
+        mViewPager.setPageTransformer(false, new BannerPageTransformer());
+        mViewPager.setOffscreenPageLimit(5);
     }
 
 
@@ -115,6 +138,15 @@ public class BannerView extends FrameLayout {
         return ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getWidth();
     }
 
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        // 视图初始化完毕，开始轮播任务
+        if (mScrollTask == null) mScrollTask = new AutoScrollTask();
+        if (isAutoScroll) startAutoScroll();
+    }
+
     /**
      * 自动轮播任务
      */
@@ -124,9 +156,6 @@ public class BannerView extends FrameLayout {
         public void run() {
             int currentPosition = mViewPager.getCurrentItem();
 
-            // 正常轮播把动画打开
-            isAnimScroll = true;
-
             if (mViewPager.getAdapter() != null) {
                 if (currentPosition == mViewPager.getAdapter().getCount() - 1) {
                     // 最后一页
@@ -135,13 +164,14 @@ public class BannerView extends FrameLayout {
                     mViewPager.setCurrentItem(currentPosition + 1);
                 }
             }
+            Log.d(TAG, "run: currentPosition = " + mViewPager.getCurrentItem());
             // 一直给自己发消息
-            mHandler.postDelayed(this, mDuration);
+            mHandler.postDelayed(this, mScrollDuration);
         }
 
         void start() {
             mHandler.removeCallbacks(this);
-            mHandler.postDelayed(this, mDuration);
+            mHandler.postDelayed(this, mScrollDuration);
         }
 
         void stop() {
@@ -154,7 +184,7 @@ public class BannerView extends FrameLayout {
      *
      * @param during
      */
-    public void setAnimationDuration(final int during) {
+    public void setAnimationScroll(final int during) {
         try {
             // viewPager平移动画事件
             Field mField = ViewPager.class.getDeclaredField("mScroller");
@@ -172,7 +202,8 @@ public class BannerView extends FrameLayout {
                 public void startScroll(int startX, int startY, int dx,
                                         int dy, int duration) {
                     // 如果手动滚动,则加速滚动
-                    if (System.currentTimeMillis() - mRecentTouchTime > mDuration && isAnimScroll) {
+                    // TODO 使用这种设置极不稳定，需要抽离
+                    if (System.currentTimeMillis() - mRecentTouchTime > mScrollDuration && isAnimScroll) {
                         // 动画滑动
                         duration = during;
                     } else {
@@ -201,6 +232,38 @@ public class BannerView extends FrameLayout {
         return super.onInterceptTouchEvent(ev);
     }
 
+
+    /**
+     * ViewPager Item动画转换类
+     */
+    private class BannerPageTransformer implements ViewPager.PageTransformer {
+
+        @Override
+        public void transformPage(View page, float position) {
+            Log.d(TAG, "transformPage: position=" + position);
+            // 不同位置的缩放和透明度
+            float scale = (position < 0)
+                    ? ((1 - scaleMin) * position + 1)
+                    : ((scaleMin - 1) * position + 1);
+            float alpha = (position < 0)
+                    ? ((1 - alphaMin) * position + 1)
+                    : ((alphaMin - 1) * position + 1);
+            // 保持左右两边的图片位置中心
+            if (position < 0) {
+                ViewCompat.setPivotX(page, page.getWidth());
+                ViewCompat.setPivotY(page, page.getHeight() / 2);
+            } else {
+                ViewCompat.setPivotX(page, 0);
+                ViewCompat.setPivotY(page, page.getHeight() / 2);
+            }
+            Log.d(TAG, "transformPage: scale=" + scale);
+            ViewCompat.setScaleX(page, scale);
+            ViewCompat.setScaleY(page, scale);
+            ViewCompat.setAlpha(page, Math.abs(alpha));
+        }
+    }
+
+
     /**
      * ==================================API==================================
      */
@@ -210,18 +273,35 @@ public class BannerView extends FrameLayout {
 
     public void setAdapter(PagerAdapter adapter) {
         mViewPager.setAdapter(adapter);
+        if (adapter instanceof BannerBaseAdapter) {
+            ((BannerBaseAdapter) adapter).setBannerView(this);
+        }
     }
 
+    /**
+     * 开启自动轮播
+     */
     public void startAutoScroll() {
         if (mScrollTask == null) return;
         mScrollTask.start();
+        setAnimationScroll((int) mAnimDuration);
+        Log.d(TAG, "startAutoScroll");
     }
 
+    /**
+     * 停止自动轮播
+     */
     public void stopAutoScroll() {
         if (mScrollTask == null) return;
         mScrollTask.stop();
+        Log.d(TAG, "stopAutoScroll");
     }
 
+    /**
+     * 是否动画轮播
+     *
+     * @param isAnimScroll
+     */
     public void isAnimScroll(boolean isAnimScroll) {
         this.isAnimScroll = isAnimScroll;
     }
@@ -232,16 +312,39 @@ public class BannerView extends FrameLayout {
      * @param size
      */
     public void resetCurrentPosition(int size) {
+        if (size == 0) return;
         // 去除动画
-        isAnimScroll(false);
-        // TODO 修改成中间值，滑动的位置不对，重新计算算法
-        Integer midPosition = 1000 - Integer.MAX_VALUE % size;
-        mViewPager.setCurrentItem(midPosition);
+        // isAnimScroll(false);
+        mViewPager.setCurrentItem(size * 1000);
     }
 
     public void addOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
         if (mViewPager != null) {
             mViewPager.addOnPageChangeListener(listener);
         }
+    }
+
+    public void setPageMargin(int pageMargin) {
+        this.pageMargin = pageMargin;
+    }
+
+    public void setPagePercent(float pagePercent) {
+        this.pagePercent = pagePercent;
+    }
+
+    public void setPageScale(float scale) {
+        this.scaleMin = scale;
+    }
+
+    public void setPageAlpha(float alpha) {
+        this.alphaMin = alpha;
+    }
+
+    public void setScrollDuration(long scrollDuration) {
+        mScrollDuration = scrollDuration;
+    }
+
+    public void setAnimDuration(long animDuration) {
+        mAnimDuration = animDuration;
     }
 }
