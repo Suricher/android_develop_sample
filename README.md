@@ -21,3 +21,5 @@
 ### android_widget(控件模块)
 > 收集开发中用到的控件。
 
+* [带动画无限轮播的Banner](android_widget/src/main/java/com/pinger/widget/banner/Banner无限轮播控件.md)
+
